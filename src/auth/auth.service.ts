@@ -64,4 +64,19 @@ export class AuthService {
 
     return { accessToken, refreshToken };
   }
+
+  // =========================
+  // GOOGLE OAUTH LOGIN
+  // =========================
+  async loginWithGoogle(user: any) {
+    return this.oauthLogin({
+      provider: "google",
+      providerUserId: user.id,
+      email: user.email,
+      avatarUrl: user.picture,
+    });
+  }
+
 }
+
+  // =========================
