@@ -1,23 +1,16 @@
 import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { AuthService } from './auth.service';
+import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
-import { GithubStrategy } from './strategies/github.strategy';
-import { GoogleStrategy } from './strategies/google.strategy';
-import { PrismaModule } from '../prisma/prisma.module';
+import { GoogleStrategy } from './google.strategy';
+import { GithubStrategy } from './github.strategy';
 
 @Module({
   imports: [
     PassportModule,
-    PrismaModule,
-    JwtModule.register({}), // 🔴 ESTA LÍNEA CIERRA TODO
+    JwtModule.register({}),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    GithubStrategy,
-    GoogleStrategy,
-  ],
+  providers: [GoogleStrategy, GithubStrategy],
 })
 export class AuthModule {}
