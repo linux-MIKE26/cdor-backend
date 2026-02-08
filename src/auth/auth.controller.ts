@@ -1,3 +1,4 @@
+import { AuthGuard } from "@nestjs/passport";
 import {
   Controller,
   Post,
@@ -10,6 +11,33 @@ import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
+
+  @Get("google")
+  @UseGuards(AuthGuard("google"))
+  googleAuth() {
+    return;
+  }
+
+  @Get("google/callback")
+  @UseGuards(AuthGuard("google"))
+  async googleCallback(req, res) {
+    const { refreshToken } =
+      await this.auth.loginWithGoogle(req.user);
+
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/auth/refresh",
+    });
+
+    return res.redirect(process.env.FRONTEND_URL);
+  }
+
+
+    return;
+  }
+
   constructor(
     private jwt: JwtService,
     private auth: AuthService,
