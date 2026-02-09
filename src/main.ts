@@ -1,15 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import cookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(cookieParser());
+  
   app.setGlobalPrefix('api');
+  app.useGlobalPipes(new ValidationPipe());
+  
+  // CORREGIDO: enableCors con la lista de dominios permitidos
   app.enableCors({
-    origin: ['https://cdor.online', 'http://localhost:3000'],
+    origin: ['https://www.cdor.online', 'https://cdor.online'],
     credentials: true,
   });
-  await app.listen(process.env.PORT || 3000);
+
+  const port = process.env.PORT || 10000;
+  
+  await app.listen(port, '0.0.0.0');
+  console.log(`Application is running on: http://0.0.0.0:${port}/api`);
 }
 bootstrap();
