@@ -20,7 +20,6 @@ export class AuthController {
       email: req.user.email,
       avatarUrl: req.user.avatarUrl
     });
-    // Redirigimos al subdominio www que es el que estás usando
     return res.redirect(`https://www.cdor.online?token=${accessToken}`);
   }
 
