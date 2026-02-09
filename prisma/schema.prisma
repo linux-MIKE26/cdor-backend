@@ -4,131 +4,14 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = "env(DATABASE_URL)"
+  url      = env("DATABASE_URL")
 }
-
-//////////////////////
-// USER
-//////////////////////
 
 model User {
-  id              String         @id @default(uuid())
-  refreshTokens   RefreshToken[]
-  email           String?        @unique
-  emailVerifiedAt DateTime?
-  passwordHash    String?
-  name            String?
-  avatarUrl       String?
-  status          UserStatus     @default(ACTIVE)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  providers         UserProvider[]
-  sessions          Session[]
-  verificationCodes VerificationCode[]
-  consents          Consent[]
-}
-
-//////////////////////
-// OAUTH PROVIDERS
-//////////////////////
-
-model UserProvider {
-  id             String       @id @default(uuid())
-  userId         String
-  provider       AuthProvider
-  providerUserId String
-  createdAt      DateTime     @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerUserId])
-}
-
-//////////////////////
-// SESSIONS (REFRESH TOKENS)
-//////////////////////
-
-model Session {
-  id               String    @id @default(uuid())
-  userId           String
-  refreshTokenHash String
-  ipAddress        String
-  userAgent        String
-  expiresAt        DateTime
-  revokedAt        DateTime?
-  createdAt        DateTime  @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-//////////////////////
-// VERIFICATION CODES
-//////////////////////
-
-model VerificationCode {
-  id        String              @id @default(uuid())
-  userId    String
-  purpose   VerificationPurpose
-  codeHash  String
-  expiresAt DateTime
-  attempts  Int                 @default(0)
-  createdAt DateTime            @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-//////////////////////
-// LEGAL CONSENTS
-//////////////////////
-
-model Consent {
-  id         String      @id @default(uuid())
-  userId     String
-  type       ConsentType
-  version    String
-  ipAddress  String
-  acceptedAt DateTime    @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-//////////////////////
-// ENUMS
-//////////////////////
-
-enum UserStatus {
-  ACTIVE
-  BANNED
-  DELETED
-}
-
-enum AuthProvider {
-  GOOGLE
-  GITHUB
-  DISCORD
-  APPLE
-}
-
-enum VerificationPurpose {
-  EMAIL_VERIFY
-  PASSWORD_RESET
-}
-
-enum ConsentType {
-  PRIVACY
-  TERMS
-}
-
-model RefreshToken {
-  id        String   @id @default(uuid())
-  tokenHash String   @unique
-  userId    String
-  revoked   Boolean  @default(false)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  email          String   @unique
+  provider       String
+  providerUserId String   @unique
+  avatarUrl      String?
+  createdAt      DateTime @default(now())
 }
