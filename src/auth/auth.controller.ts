@@ -16,11 +16,10 @@ export class AuthController {
   async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
     const { accessToken } = await this.authService.oauthLogin({
       provider: 'GOOGLE',
-      providerUserId: req.user.providerUserId || req.user.id,
+      providerUserId: req.user.providerUserId,
       email: req.user.email,
       avatarUrl: req.user.avatarUrl
     });
-    // Redirección directa a tu dominio
     return res.redirect(`https://www.cdor.online?token=${accessToken}`);
   }
 
@@ -33,7 +32,7 @@ export class AuthController {
   async githubAuthRedirect(@Req() req: any, @Res() res: Response) {
     const { accessToken } = await this.authService.oauthLogin({
       provider: 'GITHUB',
-      providerUserId: req.user.providerUserId || req.user.id,
+      providerUserId: req.user.providerUserId,
       email: req.user.email,
       avatarUrl: req.user.avatarUrl
     });
