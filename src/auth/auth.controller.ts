@@ -13,10 +13,10 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req, @Res() res: Response) {
+  async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
     const { accessToken } = await this.authService.oauthLogin({
       provider: 'GOOGLE',
-      providerUserId: req.user.providerUserId,
+      providerUserId: req.user.providerUserId || req.user.id,
       email: req.user.email,
       avatarUrl: req.user.avatarUrl
     });
@@ -29,10 +29,10 @@ export class AuthController {
 
   @Get('github/callback')
   @UseGuards(AuthGuard('github'))
-  async githubAuthRedirect(@Req() req, @Res() res: Response) {
+  async githubAuthRedirect(@Req() req: any, @Res() res: Response) {
     const { accessToken } = await this.authService.oauthLogin({
       provider: 'GITHUB',
-      providerUserId: req.user.providerUserId,
+      providerUserId: req.user.providerUserId || req.user.id,
       email: req.user.email,
       avatarUrl: req.user.avatarUrl
     });
