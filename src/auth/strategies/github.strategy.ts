@@ -3,29 +3,27 @@ import { Injectable } from '@nestjs/common';
 import { Strategy } from 'passport-github2';
 
 @Injectable()
-export class GithubStrategy extends PassportStrategy(
-  Strategy,
-  'github',
-) {
+export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
   constructor() {
     super({
-      clientID: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-      callbackURL: process.env.GITHUB_CALLBACK_URL!,
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: process.env.GITHUB_CALLBACK_URL,
       scope: ['user:email'],
     });
   }
 
   async validate(
-    _: string,
-    __: string,
+    _accessToken: string,
+    _refreshToken: string,
     profile: any,
   ) {
+    const { id, emails, photos } = profile;
     return {
       provider: 'GITHUB',
-      providerUserId: profile.id,
-      email: profile.emails?.[0]?.value,
-      avatarUrl: profile.photos?.[0]?.value,
+      providerUserId: id.toString(),
+      email: emails?.[0]?.value,
+      avatarUrl: photos?.[0]?.value,
     };
   }
 }

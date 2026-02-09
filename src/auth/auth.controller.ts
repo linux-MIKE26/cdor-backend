@@ -20,6 +20,7 @@ export class AuthController {
       email: req.user.email,
       avatarUrl: req.user.avatarUrl
     });
+    // Redirección directa a tu dominio
     return res.redirect(`https://www.cdor.online?token=${accessToken}`);
   }
 
