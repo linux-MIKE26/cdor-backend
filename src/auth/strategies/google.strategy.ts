@@ -6,24 +6,19 @@ import { Strategy } from 'passport-google-oauth20';
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor() {
     super({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      clientID: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL!,
       scope: ['email', 'profile'],
     });
   }
 
-  async validate(
-    _accessToken: string,
-    _refreshToken: string,
-    profile: any,
-  ) {
-    const { id, emails, photos } = profile;
+  async validate(_at: string, _rt: string, profile: any) {
     return {
       provider: 'GOOGLE',
-      providerUserId: id,
-      email: emails?.[0]?.value,
-      avatarUrl: photos?.[0]?.value,
+      providerUserId: profile.id,
+      email: profile.emails?.[0]?.value,
+      avatarUrl: profile.photos?.[0]?.value,
     };
   }
 }

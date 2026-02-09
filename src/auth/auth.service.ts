@@ -6,62 +6,34 @@ import { PrismaService } from '../prisma/prisma.service';
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwt: JwtService,
+    private jwtService: JwtService,
   ) {}
 
   async oauthLogin(profile: {
     provider: string;
     providerUserId: string;
-    email?: string;
+    email: string;
     avatarUrl?: string;
   }) {
-    const providerEnum = profile.provider.toUpperCase() as any;
-
-    let userProvider = await this.prisma.userProvider.findUnique({
-      where: {
-        provider_providerUserId: {
-          provider: providerEnum,
-          providerUserId: profile.providerUserId,
-        },
-      },
-      include: { user: true },
+    // Buscamos por el ID único del proveedor (Google/GitHub)
+    let user = await this.prisma.user.findUnique({
+      where: { providerUserId: profile.providerUserId },
     });
 
-    if (!userProvider) {
-      let user = await this.prisma.user.findUnique({
-        where: { email: profile.email },
-      });
-
-      if (!user) {
-        user = await this.prisma.user.create({
-          data: {
-            email: profile.email,
-            avatarUrl: profile.avatarUrl,
-            name: profile.email?.split('@')[0] ?? 'user',
-          },
-        });
-      }
-
-      userProvider = await this.prisma.userProvider.create({
+    if (!user) {
+      user = await this.prisma.user.create({
         data: {
-          provider: providerEnum,
+          email: profile.email || `${profile.providerUserId}@cdor.online`,
+          provider: profile.provider,
           providerUserId: profile.providerUserId,
-          userId: user.id,
+          avatarUrl: profile.avatarUrl,
         },
-        include: { user: true },
       });
     }
 
-    const user = userProvider.user;
-    const accessToken = this.jwt.sign({ sub: user.id }, {
-      secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: '15m',
-    });
-    const refreshToken = this.jwt.sign({ sub: user.id }, {
-      secret: process.env.JWT_REFRESH_SECRET,
-      expiresIn: '30d',
-    });
-
-    return { accessToken, refreshToken, user };
+    const payload = { sub: user.id, email: user.email };
+    return {
+      accessToken: this.jwtService.sign(payload),
+    };
   }
 }
