@@ -4,13 +4,12 @@ import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   app.use(cookieParser());
+  app.setGlobalPrefix('api');
   app.enableCors({
-    origin: true,
+    origin: ['https://cdor.online', 'http://localhost:3000'],
     credentials: true,
   });
-
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
