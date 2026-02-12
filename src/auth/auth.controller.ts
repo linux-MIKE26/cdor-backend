@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Req, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import type { Response } from 'express';
@@ -37,5 +37,15 @@ export class AuthController {
       avatarUrl: req.user.avatarUrl
     });
     return res.redirect(`https://www.cdor.online?token=${accessToken}`);
+  }
+
+  @Post('email/send-code')
+  async sendCode(@Body('email') email: string) {
+    return this.authService.sendEmailCode(email);
+  }
+
+  @Post('email/verify-code')
+  async verifyCode(@Body('email') email: string, @Body('code') code: string) {
+    return this.authService.verifyEmailCode(email, code);
   }
 }

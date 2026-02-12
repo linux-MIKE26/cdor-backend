@@ -15,3 +15,10 @@ model User {
   avatarUrl      String?
   createdAt      DateTime @default(now())
 }
+
+model EmailVerificationCode {
+  email     String   @id
+  codeHash  String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
